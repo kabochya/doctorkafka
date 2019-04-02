@@ -1,11 +1,11 @@
 package com.pinterest.doctorkafka.servlet;
 
-import com.pinterest.doctorkafka.BrokerStats;
 import com.pinterest.doctorkafka.DoctorKafkaMain;
 import com.pinterest.doctorkafka.KafkaBroker;
 import com.pinterest.doctorkafka.KafkaCluster;
 import com.pinterest.doctorkafka.KafkaClusterManager;
-import com.pinterest.doctorkafka.ReplicaStat;
+import com.pinterest.doctorkafka.avro.BrokerStats;
+import com.pinterest.doctorkafka.avro.ReplicaStat;
 import com.pinterest.doctorkafka.util.KafkaUtils;
 import com.pinterest.doctorkafka.errors.ClusterInfoError;
 

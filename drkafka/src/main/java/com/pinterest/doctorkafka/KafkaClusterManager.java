@@ -1,5 +1,6 @@
 package com.pinterest.doctorkafka;
 
+import com.pinterest.doctorkafka.avro.BrokerStats;
 import com.pinterest.doctorkafka.config.DoctorKafkaClusterConfig;
 import com.pinterest.doctorkafka.config.DoctorKafkaConfig;
 import com.pinterest.doctorkafka.notification.Email;

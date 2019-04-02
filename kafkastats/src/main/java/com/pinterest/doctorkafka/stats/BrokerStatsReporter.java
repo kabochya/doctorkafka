@@ -1,6 +1,6 @@
 package com.pinterest.doctorkafka.stats;
 
-import com.pinterest.doctorkafka.BrokerStats;
+import com.pinterest.doctorkafka.avro.BrokerStats;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.logging.log4j.LogManager;

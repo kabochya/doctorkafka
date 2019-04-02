@@ -1,9 +1,9 @@
 package com.pinterest.doctorkafka.stats;
 
-import com.pinterest.doctorkafka.AvroTopicPartition;
-import com.pinterest.doctorkafka.BrokerError;
-import com.pinterest.doctorkafka.BrokerStats;
-import com.pinterest.doctorkafka.ReplicaStat;
+import com.pinterest.doctorkafka.avro.AvroTopicPartition;
+import com.pinterest.doctorkafka.avro.BrokerError;
+import com.pinterest.doctorkafka.avro.BrokerStats;
+import com.pinterest.doctorkafka.avro.ReplicaStat;
 import com.pinterest.doctorkafka.util.OperatorUtil;
 import com.pinterest.doctorkafka.util.KafkaUtils;
 

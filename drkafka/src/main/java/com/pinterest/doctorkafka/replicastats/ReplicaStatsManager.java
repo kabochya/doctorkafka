@@ -20,9 +20,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.SlidingWindowReservoir;
-import com.pinterest.doctorkafka.BrokerStats;
+import com.pinterest.doctorkafka.avro.BrokerStats;
 import com.pinterest.doctorkafka.KafkaCluster;
-import com.pinterest.doctorkafka.ReplicaStat;
+import com.pinterest.doctorkafka.avro.ReplicaStat;
 import com.pinterest.doctorkafka.config.DoctorKafkaClusterConfig;
 import com.pinterest.doctorkafka.config.DoctorKafkaConfig;
 import com.pinterest.doctorkafka.util.KafkaUtils;

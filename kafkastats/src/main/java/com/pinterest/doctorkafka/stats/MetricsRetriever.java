@@ -1,6 +1,6 @@
 package com.pinterest.doctorkafka.stats;
 
-import com.pinterest.doctorkafka.ReplicaStat;
+import com.pinterest.doctorkafka.avro.ReplicaStat;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.kafka.common.TopicPartition;

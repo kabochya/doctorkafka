@@ -1,7 +1,7 @@
 package com.pinterest.doctorkafka.servlet;
 
 import com.pinterest.doctorkafka.DoctorKafkaMain;
-import com.pinterest.doctorkafka.OperatorAction;
+import com.pinterest.doctorkafka.avro.OperatorAction;
 import com.pinterest.doctorkafka.config.DoctorKafkaConfig;
 import com.pinterest.doctorkafka.util.OperatorUtil;
 

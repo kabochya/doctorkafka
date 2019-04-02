@@ -95,6 +95,11 @@
 			<artifactId>kafka-clients</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.thrift</groupId>
+			<artifactId>libthrift</artifactId>
+			<version>0.11.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.avro</groupId>
 			<artifactId>avro</artifactId>
 			<version>1.8.2</version>

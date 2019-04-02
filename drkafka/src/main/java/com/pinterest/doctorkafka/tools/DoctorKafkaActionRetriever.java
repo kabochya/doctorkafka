@@ -1,6 +1,6 @@
 package com.pinterest.doctorkafka.tools;
 
-import com.pinterest.doctorkafka.OperatorAction;
+import com.pinterest.doctorkafka.avro.OperatorAction;
 import com.pinterest.doctorkafka.util.OperatorUtil;
 
 import com.google.common.collect.Lists;

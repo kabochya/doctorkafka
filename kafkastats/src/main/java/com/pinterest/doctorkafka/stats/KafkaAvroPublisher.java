@@ -2,7 +2,7 @@ package com.pinterest.doctorkafka.stats;
 
 import com.pinterest.doctorkafka.util.OpenTsdbMetricConverter;
 import com.pinterest.doctorkafka.util.OperatorUtil;
-import com.pinterest.doctorkafka.BrokerStats;
+import com.pinterest.doctorkafka.avro.BrokerStats;
 
 import java.io.FileInputStream;
 import java.util.HashMap;

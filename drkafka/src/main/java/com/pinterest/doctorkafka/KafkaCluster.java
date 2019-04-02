@@ -1,6 +1,8 @@
 package com.pinterest.doctorkafka;
 
 
+import com.pinterest.doctorkafka.avro.AvroTopicPartition;
+import com.pinterest.doctorkafka.avro.BrokerStats;
 import com.pinterest.doctorkafka.config.DoctorKafkaClusterConfig;
 import com.pinterest.doctorkafka.replicastats.ReplicaStatsManager;
 import com.pinterest.doctorkafka.util.OutOfSyncReplica;

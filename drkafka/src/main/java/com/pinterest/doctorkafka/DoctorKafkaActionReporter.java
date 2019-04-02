@@ -1,5 +1,6 @@
 package com.pinterest.doctorkafka;
 
+import com.pinterest.doctorkafka.avro.OperatorAction;
 import com.pinterest.doctorkafka.util.OperatorUtil;
 
 import java.util.Map;

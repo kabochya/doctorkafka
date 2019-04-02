@@ -1,6 +1,6 @@
 package com.pinterest.doctorkafka.tools;
 
-import com.pinterest.doctorkafka.BrokerStats;
+import com.pinterest.doctorkafka.avro.BrokerStats;
 import com.pinterest.doctorkafka.replicastats.ReplicaStatsManager;
 import com.pinterest.doctorkafka.util.KafkaUtils;
 import com.pinterest.doctorkafka.util.OperatorUtil;

@@ -1,7 +1,7 @@
 package com.pinterest.doctorkafka.stats;
 
 
-import com.pinterest.doctorkafka.ReplicaStat;
+import com.pinterest.doctorkafka.avro.ReplicaStat;
 
 import org.apache.kafka.common.TopicPartition;
 import org.apache.logging.log4j.LogManager;

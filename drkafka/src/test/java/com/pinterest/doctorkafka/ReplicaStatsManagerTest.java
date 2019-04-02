@@ -2,6 +2,7 @@ package com.pinterest.doctorkafka;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.pinterest.doctorkafka.avro.ReplicaStat;
 import com.pinterest.doctorkafka.replicastats.ReplicaStatsManager;
 
 import org.apache.kafka.common.TopicPartition;

@@ -2,7 +2,7 @@ package com.pinterest.doctorkafka.util;
 
 
 import com.google.common.net.HostAndPort;
-import com.pinterest.doctorkafka.BrokerStats;
+import com.pinterest.doctorkafka.avro.BrokerStats;
 
 import org.apache.commons.lang3.tuple.MutablePair;
 
