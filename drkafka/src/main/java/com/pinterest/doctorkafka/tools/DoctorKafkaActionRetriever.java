@@ -1,13 +1,9 @@
 package com.pinterest.doctorkafka.tools;
 
-import com.pinterest.doctorkafka.avro.OperatorAction;
+import com.pinterest.doctorkafka.thrift.OperatorAction;
 import com.pinterest.doctorkafka.util.OperatorUtil;
 
 import com.google.common.collect.Lists;
-import org.apache.avro.Schema;
-import org.apache.avro.io.BinaryDecoder;
-import org.apache.avro.io.DecoderFactory;
-import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -22,6 +18,7 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.security.auth.SecurityProtocol;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.thrift.TDeserializer;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,8 +29,6 @@ import java.util.Properties;
 public class DoctorKafkaActionRetriever {
 
   private static final Logger LOG = LogManager.getLogger(DoctorKafkaActionRetriever.class);
-  private static final DecoderFactory avroDecoderFactory = DecoderFactory.get();
-  private static Schema operatorActionSchema = OperatorAction.getClassSchema();
 
   private static final String ZOOKEEPER = "zookeeper";
   private static final String TOPIC = "topic";
@@ -106,12 +101,9 @@ public class DoctorKafkaActionRetriever {
 
       for (ConsumerRecord<byte[], byte[]> record : Lists.reverse(recordList)) {
         try {
-          BinaryDecoder binaryDecoder = avroDecoderFactory.binaryDecoder(record.value(), null);
-          SpecificDatumReader<OperatorAction> reader =
-              new SpecificDatumReader<>(operatorActionSchema);
-
+          TDeserializer thriftDeserializer = new TDeserializer();
           OperatorAction result = new OperatorAction();
-          reader.read(result, binaryDecoder);
+          thriftDeserializer.deserialize(result, record.value());
 
           Date date = new Date(result.getTimestamp());
           System.out.println(date.toString() + " : " + result);

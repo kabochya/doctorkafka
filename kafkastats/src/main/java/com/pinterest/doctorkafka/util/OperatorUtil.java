@@ -2,7 +2,7 @@ package com.pinterest.doctorkafka.util;
 
 
 import com.google.common.net.HostAndPort;
-import com.pinterest.doctorkafka.avro.BrokerStats;
+import com.pinterest.doctorkafka.thrift.BrokerStats;
 
 import org.apache.commons.lang3.tuple.MutablePair;
 
@@ -29,6 +29,7 @@ import org.apache.kafka.common.network.ListenerName;
 import org.apache.kafka.common.security.auth.SecurityProtocol;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.thrift.TDeserializer;
 import scala.Tuple2;
 import scala.collection.Seq;
 
@@ -56,14 +57,11 @@ public class OperatorUtil {
   private static final Logger LOG = LogManager.getLogger(OperatorUtil.class);
   public static final int WINDOW_SIZE = 6000;
   public static final String HostName = getHostname();
-  private static final DecoderFactory avroDecoderFactory = DecoderFactory.get();
   private static final String FETCH_CLIENT_NAME = "DoctorKafka";
   private static final int FETCH_SOCKET_TIMEOUT = 10 * 1000;
   private static final int FETCH_BUFFER_SIZE = 4 * 1024 * 1024;
   private static final int FETCH_RETRIES = 3;
   private static final int FETCH_MAX_WAIT_MS = 1; // this is the same wait as simmpleConsumerShell
-  // Reuse the reader to improve performance
-  private static final SpecificDatumReader<BrokerStats> brokerStatsReader = new SpecificDatumReader<>(BrokerStats.getClassSchema());
 
   public static String getHostname() {
     String hostName;
@@ -265,9 +263,9 @@ public class OperatorUtil {
 
   public static BrokerStats deserializeBrokerStats(ConsumerRecord<byte[], byte[]> record) {
     try {
-      BinaryDecoder binaryDecoder = avroDecoderFactory.binaryDecoder(record.value(), null);
       BrokerStats stats = new BrokerStats();
-      brokerStatsReader.read(stats, binaryDecoder);
+      TDeserializer thriftDeserializer = new TDeserializer();
+      thriftDeserializer.deserialize(stats, record.value());
       return stats;
     } catch (Exception e) {
       LOG.debug("Fail to decode an message", e);

@@ -20,9 +20,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.SlidingWindowReservoir;
-import com.pinterest.doctorkafka.avro.BrokerStats;
+import com.pinterest.doctorkafka.thrift.BrokerStats;
 import com.pinterest.doctorkafka.KafkaCluster;
-import com.pinterest.doctorkafka.avro.ReplicaStat;
+import com.pinterest.doctorkafka.thrift.ReplicaStats;
 import com.pinterest.doctorkafka.config.DoctorKafkaClusterConfig;
 import com.pinterest.doctorkafka.config.DoctorKafkaConfig;
 import com.pinterest.doctorkafka.util.KafkaUtils;
@@ -59,18 +59,18 @@ public class ReplicaStatsManager {
   }
 
   public static void updateReplicaReassignmentTimestamp(String brokerZkUrl,
-                                                         ReplicaStat replicaStat) {
+                                                        ReplicaStats ReplicaStats) {
     if (!replicaReassignmentTimestamps.containsKey(brokerZkUrl)) {
       replicaReassignmentTimestamps.put(brokerZkUrl, new ConcurrentHashMap<>());
     }
     ConcurrentHashMap<TopicPartition, Long> replicaTimestamps =
         replicaReassignmentTimestamps.get(brokerZkUrl);
     TopicPartition topicPartition = new TopicPartition(
-        replicaStat.getTopic(), replicaStat.getPartition());
+        ReplicaStats.getTopic(), ReplicaStats.getPartition());
 
     if (!replicaTimestamps.containsKey(topicPartition) ||
-        replicaTimestamps.get(topicPartition) < replicaStat.getTimestamp()) {
-      replicaTimestamps.put(topicPartition, replicaStat.getTimestamp());
+        replicaTimestamps.get(topicPartition) < ReplicaStats.getTimestamp()) {
+      replicaTimestamps.put(topicPartition, ReplicaStats.getTimestamp());
     }
   }
 
@@ -110,14 +110,14 @@ public class ReplicaStatsManager {
     if (brokerStats.getLeaderReplicaStats() != null) {
       ConcurrentMap<TopicPartition, Histogram> bytesInHistograms = bytesInStats.get(brokerZkUrl);
       ConcurrentMap<TopicPartition, Histogram> bytesOutHistograms = bytesOutStats.get(brokerZkUrl);
-      for (ReplicaStat replicaStat : brokerStats.getLeaderReplicaStats()) {
-        if (replicaStat.getInReassignment()) {
+      for (ReplicaStats replicaStats: brokerStats.getLeaderReplicaStats()) {
+        if (replicaStats.isInReassignment()) {
           // if the replica is involved in reassignment, ignore the stats
-          updateReplicaReassignmentTimestamp(brokerZkUrl, replicaStat);
+          updateReplicaReassignmentTimestamp(brokerZkUrl, replicaStats);
           continue;
         }
         TopicPartition topicPartition = new TopicPartition(
-            replicaStat.getTopic(), replicaStat.getPartition());
+            replicaStats.getTopic(), replicaStats.getPartition());
         long lastReassignment = getLastReplicaReassignmentTimestamp(brokerZkUrl, topicPartition);
         if (brokerStats.getTimestamp() - lastReassignment < REASSIGNMENT_COOLDOWN_WINDOW_IN_MS) {
           continue;
@@ -126,8 +126,8 @@ public class ReplicaStatsManager {
         bytesInHistograms.computeIfAbsent(topicPartition, k -> new Histogram(new SlidingWindowReservoir(SLIDING_WINDOW_SIZE)));
         bytesOutHistograms.computeIfAbsent(topicPartition, k -> new Histogram(new SlidingWindowReservoir(SLIDING_WINDOW_SIZE)));
 
-        bytesInHistograms.get(topicPartition).update(replicaStat.getBytesIn15MinMeanRate());
-        bytesOutHistograms.get(topicPartition).update(replicaStat.getBytesOut15MinMeanRate());
+        bytesInHistograms.get(topicPartition).update(replicaStats.getBytesIn15MinMeanRate());
+        bytesOutHistograms.get(topicPartition).update(replicaStats.getBytesOut15MinMeanRate());
       }
     }
   }

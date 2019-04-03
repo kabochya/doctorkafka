@@ -1,13 +1,9 @@
 package com.pinterest.doctorkafka;
 
-import com.pinterest.doctorkafka.avro.OperatorAction;
+import com.pinterest.doctorkafka.thrift.OperatorAction;
 import com.pinterest.doctorkafka.util.OperatorUtil;
 
 import java.util.Map;
-import org.apache.avro.io.BinaryEncoder;
-import org.apache.avro.io.EncoderFactory;
-import org.apache.avro.specific.SpecificDatumWriter;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -16,8 +12,8 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.security.auth.SecurityProtocol;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.thrift.TSerializer;
 
-import java.io.ByteArrayOutputStream;
 import java.util.Properties;
 import java.util.concurrent.Future;
 
@@ -25,9 +21,6 @@ public class DoctorKafkaActionReporter {
 
   private static final Logger LOG = LogManager.getLogger(DoctorKafkaActionReporter.class);
   private static final int MAX_RETRIES = 5;
-  private static final EncoderFactory avroEncoderFactory = EncoderFactory.get();
-  private static final SpecificDatumWriter<OperatorAction> avroWriter
-      = new SpecificDatumWriter<>(OperatorAction.SCHEMA$);
 
   private String topic;
   private final Producer<byte[], byte[]> kafkaProducer;
@@ -57,17 +50,16 @@ public class DoctorKafkaActionReporter {
     while (numRetries < MAX_RETRIES) {
       try {
         long timestamp = System.currentTimeMillis();
-        OperatorAction operatorAction = new OperatorAction(timestamp, clusterName, message);
-
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        BinaryEncoder binaryEncoder = avroEncoderFactory.binaryEncoder(stream, null);
-        avroWriter.write(operatorAction, binaryEncoder);
-        binaryEncoder.flush();
-        IOUtils.closeQuietly(stream);
+        OperatorAction operatorAction = new OperatorAction()
+            .setTimestamp(timestamp)
+            .setClusterName(clusterName)
+            .setDescription(message);
+        TSerializer thriftSerializer = new TSerializer();
+        byte[] msg = thriftSerializer.serialize(operatorAction);
 
         String key = Long.toString(System.currentTimeMillis());
         ProducerRecord<byte[], byte[]>  producerRecord = 
-            new ProducerRecord<>(topic, key.getBytes(), stream.toByteArray());
+            new ProducerRecord<>(topic, key.getBytes(), msg);
         Future<RecordMetadata> future = kafkaProducer.send(producerRecord);
         future.get();
         LOG.info("Send an message {} to action report : ", message);

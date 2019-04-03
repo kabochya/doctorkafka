@@ -1,15 +1,11 @@
 package com.pinterest.doctorkafka.servlet;
 
 import com.pinterest.doctorkafka.DoctorKafkaMain;
-import com.pinterest.doctorkafka.avro.OperatorAction;
+import com.pinterest.doctorkafka.thrift.OperatorAction;
 import com.pinterest.doctorkafka.config.DoctorKafkaConfig;
 import com.pinterest.doctorkafka.util.OperatorUtil;
 
 import com.google.common.collect.Lists;
-import org.apache.avro.Schema;
-import org.apache.avro.io.BinaryDecoder;
-import org.apache.avro.io.DecoderFactory;
-import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -19,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
+import org.apache.thrift.TDeserializer;
 
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
@@ -35,9 +32,7 @@ public class DoctorKafkaActionsServlet extends DoctorKafkaServlet {
   private static final Gson gson = new Gson();
   private static final String OPERATOR_ACTIONS_CONSUMER_GROUP = "doctorkafka_actions_consumer";
   private static final int NUM_MESSAGES = 1000;
-  private static final long CONSUMER_POLL_TIMEOUT_MS = 1000L;
-  private static final DecoderFactory avroDecoderFactory = DecoderFactory.get();
-  private static Schema operatorActionSchema = OperatorAction.getClassSchema();
+  private static final long CONSUMER_POLL_TIMEOUT_MS = 1000L;;
   private static SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
   @Override
@@ -47,12 +42,9 @@ public class DoctorKafkaActionsServlet extends DoctorKafkaServlet {
     for (ConsumerRecord<byte[], byte[]> record : Lists.reverse(retrieveActionReportMessages())) {
       try {
 	JsonObject jsonRecord = new JsonObject();
-	BinaryDecoder binaryDecoder = avroDecoderFactory.binaryDecoder(record.value(), null);
-	SpecificDatumReader<OperatorAction> reader =
-	  new SpecificDatumReader<>(operatorActionSchema);
-
-	OperatorAction result = new OperatorAction();
-	reader.read(result, binaryDecoder);
+        TDeserializer thriftDeserializer = new TDeserializer();
+        OperatorAction result = new OperatorAction();
+        thriftDeserializer.deserialize(result, record.value());
 
 	jsonRecord.add("date",gson.toJsonTree(new Date(result.getTimestamp())));
 	jsonRecord.add("clusterName",gson.toJsonTree(result.getClusterName()));
@@ -77,12 +69,9 @@ public class DoctorKafkaActionsServlet extends DoctorKafkaServlet {
     try {
       for (ConsumerRecord<byte[], byte[]> record : Lists.reverse(retrieveActionReportMessages())) {
 	try {
-	  BinaryDecoder binaryDecoder = avroDecoderFactory.binaryDecoder(record.value(), null);
-	  SpecificDatumReader<OperatorAction> reader =
-            new SpecificDatumReader<>(operatorActionSchema);
-
+          TDeserializer thriftDeserializer = new TDeserializer();
 	  OperatorAction result = new OperatorAction();
-	  reader.read(result, binaryDecoder);
+	  thriftDeserializer.deserialize(result, record.value());
 
 	  Date date = new Date(result.getTimestamp());
 	  writer.println("<tr class=\"active\"> ");

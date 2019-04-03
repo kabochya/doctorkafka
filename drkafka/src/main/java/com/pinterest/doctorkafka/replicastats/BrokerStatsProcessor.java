@@ -1,6 +1,6 @@
 package com.pinterest.doctorkafka.replicastats;
 
-import com.pinterest.doctorkafka.avro.BrokerStats;
+import com.pinterest.doctorkafka.thrift.BrokerStats;
 import com.pinterest.doctorkafka.DoctorKafkaMetrics;
 import com.pinterest.doctorkafka.util.OpenTsdbMetricConverter;
 import com.pinterest.doctorkafka.util.OperatorUtil;

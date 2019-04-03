@@ -1,6 +1,6 @@
 package com.pinterest.doctorkafka;
 
-import com.pinterest.doctorkafka.avro.BrokerStats;
+import com.pinterest.doctorkafka.thrift.BrokerStats;
 import com.pinterest.doctorkafka.config.DoctorKafkaClusterConfig;
 import com.pinterest.doctorkafka.config.DoctorKafkaConfig;
 import com.pinterest.doctorkafka.notification.Email;
@@ -775,7 +775,7 @@ public class KafkaClusterManager implements Runnable {
     // if all latest @NUM_BROKER_STATS brokerstats indicate broker failure.
     boolean allStatsHaveFailure = true;
     for (BrokerStats brokerStats : brokerStatsList) {
-      allStatsHaveFailure &= brokerStats.getHasFailure();
+      allStatsHaveFailure &= brokerStats.isHasFailure();
     }
     LOG.info("# brokerstats={}, allStatsHaveFailure={}", brokerStatsList.size(),
         allStatsHaveFailure);

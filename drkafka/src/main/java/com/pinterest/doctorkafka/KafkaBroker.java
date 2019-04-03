@@ -1,6 +1,6 @@
 package com.pinterest.doctorkafka;
 
-import com.pinterest.doctorkafka.avro.BrokerStats;
+import com.pinterest.doctorkafka.thrift.BrokerStats;
 import com.pinterest.doctorkafka.config.DoctorKafkaClusterConfig;
 import com.pinterest.doctorkafka.replicastats.ReplicaStatsManager;
 
@@ -184,7 +184,7 @@ public class KafkaBroker implements Comparable<KafkaBroker> {
   public synchronized void update(BrokerStats stats) {
     if (stats == null
         || (latestStats != null && latestStats.getTimestamp() > stats.getTimestamp())
-        || stats.getHasFailure()) {
+        || stats.isHasFailure()) {
       return;
     }
 

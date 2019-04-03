@@ -4,8 +4,8 @@ import com.pinterest.doctorkafka.DoctorKafkaMain;
 import com.pinterest.doctorkafka.KafkaBroker;
 import com.pinterest.doctorkafka.KafkaCluster;
 import com.pinterest.doctorkafka.KafkaClusterManager;
-import com.pinterest.doctorkafka.avro.BrokerStats;
-import com.pinterest.doctorkafka.avro.ReplicaStat;
+import com.pinterest.doctorkafka.thrift.BrokerStats;
+import com.pinterest.doctorkafka.thrift.ReplicaStats;
 import com.pinterest.doctorkafka.util.KafkaUtils;
 import com.pinterest.doctorkafka.errors.ClusterInfoError;
 
@@ -101,7 +101,7 @@ public class DoctorKafkaBrokerStatsServlet extends DoctorKafkaServlet {
     writer.print("<table class=\"table\"><tbody>");
     printHtmlTableRow(writer, "BrokerId", stats.getId());
     printHtmlTableRow(writer, "Name", stats.getName());
-    printHtmlTableRow(writer, "HasFailure", stats.getHasFailure());
+    printHtmlTableRow(writer, "HasFailure", stats.isHasFailure());
     printHtmlTableRow(writer, "KafkaVersion", stats.getKafkaVersion());
     printHtmlTableRow(writer, "KafkaStatsVersion", stats.getStatsVersion());
     printHtmlTableRow(writer, "LeadersIn1MinRate",
@@ -114,12 +114,12 @@ public class DoctorKafkaBrokerStatsServlet extends DoctorKafkaServlet {
         NumberFormat.getNumberInstance(Locale.US).format(stats.getNumReplicas()));
     printHtmlTableRow(writer, "NumLeaderPartitions", stats.getNumLeaders());
 
-    Map<TopicPartition, ReplicaStat> replicaStats =
+    Map<TopicPartition, ReplicaStats> replicaStats =
         new TreeMap(new KafkaUtils.TopicPartitionComparator());
     stats.getLeaderReplicaStats().stream()
         .forEach(
             rs -> replicaStats.put(new TopicPartition(rs.getTopic(), rs.getPartition()), rs));
-    for (Map.Entry<TopicPartition, ReplicaStat> entry : replicaStats.entrySet()) {
+    for (Map.Entry<TopicPartition, ReplicaStats> entry : replicaStats.entrySet()) {
       printHtmlTableRow(writer, entry.getKey(), entry.getValue());
     }
   }

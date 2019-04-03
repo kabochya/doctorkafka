@@ -1,8 +1,8 @@
 package com.pinterest.doctorkafka;
 
 
-import com.pinterest.doctorkafka.avro.AvroTopicPartition;
-import com.pinterest.doctorkafka.avro.BrokerStats;
+import com.pinterest.doctorkafka.thrift.ThriftTopicPartition;
+import com.pinterest.doctorkafka.thrift.BrokerStats;
 import com.pinterest.doctorkafka.config.DoctorKafkaClusterConfig;
 import com.pinterest.doctorkafka.replicastats.ReplicaStatsManager;
 import com.pinterest.doctorkafka.util.OutOfSyncReplica;
@@ -84,19 +84,20 @@ public class KafkaCluster {
         brokerStatsList.addLast(brokerStats);
       }
 
-      if (!brokerStats.getHasFailure()) {
+      if (!brokerStats.isHasFailure()) {
         // only record brokerstat when there is no failure on that broker.
         KafkaBroker broker = brokers.computeIfAbsent(brokerId, i -> new KafkaBroker(clusterConfig, i));
         broker.update(brokerStats);
       }
 
       if (brokerStats.getLeaderReplicas() != null) {
-        for (AvroTopicPartition atp : brokerStats.getLeaderReplicas()) {
-          String topic = atp.getTopic();
-          TopicPartition tp = new TopicPartition(topic, atp.getPartition());
-          topicPartitions
-              .computeIfAbsent(topic, t -> new HashSet<>())
-              .add(tp);
+        for (ThriftTopicPartition ttp : brokerStats.getLeaderReplicas()) {
+          String topic = ttp.getTopic();
+          TopicPartition tp = new TopicPartition(topic, ttp.getPartition());
+          if (!topicPartitions.containsKey(topic)) {
+            topicPartitions.put(topic, new HashSet<>());
+          }
+          topicPartitions.get(topic).add(tp);
         }
       }
     } catch (Exception e) {
@@ -221,7 +222,7 @@ public class KafkaCluster {
       KafkaBroker broker = entry.getValue();
       BrokerStats latestStats = broker.getLatestStats();
       if (latestStats == null
-          || latestStats.getHasFailure()
+          || latestStats.isHasFailure()
           || System.currentTimeMillis() - latestStats.getTimestamp() > 240000) {
         continue;
       }

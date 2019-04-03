@@ -1,16 +1,16 @@
 namespace java com.pinterest.doctorkafka.thrift
 
 enum BrokerError {
-    DiskFailure,
-    JmxConnectionFailure,
-    JmxQueryFailure,
-    KafkaServerPropertiesFailure,
-    MissingKafkaProcess,
-    MultipleKafkaProcesses,
-    UnknownError
+    DISK_FAILURE,
+    JMX_CONNECTION_FAILURE,
+    JMX_QUERY_FAILURE,
+    KAFKA_SERVER_PROPERTIES_FAILURE,
+    MISSING_KAFKA_PROCESS,
+    MULTIPLE_KAFKA_PROCESS,
+    UNKOWN_ERROR
 }
 
-struct TopicPartition{
+struct ThriftTopicPartition{
     1: optional string topic;
     2: optional i32 partition;
 }
@@ -24,8 +24,8 @@ struct ReplicaStats{
     5: optional bool inReassignment; // involved in partition reassignment
     6: optional bool underReplicated;
 
-    7: optional bool bytesIn1MinMeanRate;
-    8: optional bool bytesIn5MinMeanRate;
+    7: optional i64 bytesIn1MinMeanRate;
+    8: optional i64 bytesIn5MinMeanRate;
     9: optional i64 bytesIn15MinMeanRate;
     10: optional i64 bytesOut1MinMeanRate;
     11: optional i64 bytesOut5MinMeanRate;
@@ -81,13 +81,13 @@ struct BrokerStats {
     31: optional map<string, i64> topicsBytesIn15MinRate;
     32: optional map<string, i64> topicsBytesOut15MinRate;
 
-    33: optional list<TopicPartition> leaderReplicaStats;
-    34: optional list<TopicPartition> leaderReplicas;
-    35: optional list<TopicPartition> followerReplicas;
-    36: optional list<TopicPartition> inReassignmentReplicas;
+    33: optional list<ReplicaStats> leaderReplicaStats;
+    34: optional list<ThriftTopicPartition> leaderReplicas;
+    35: optional list<ThriftTopicPartition> followerReplicas;
+    36: optional list<ThriftTopicPartition> inReassignmentReplicas;
 }
 
-struct OperationAction {
+struct OperatorAction {
     1: required i64 timestamp = 0;
     2: optional string clusterName;
     3: optional string description;
